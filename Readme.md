@@ -37,13 +37,18 @@ pipeline {
                 }
             }
         }
-
         stage('Run Container') {
             steps {
                 script {
-                    sh 'docker run -d -p 8085:8080 myapp'
+                    sh '''
+                        if [ $(docker ps -aq -f name=myapp-container) ]; then
+                            docker rm -f myapp-container
+                        fi
+                    '''
+                    sh 'docker run -d --name myapp-container -p 8085:8080 myapp'
                 }
             }
         }
+
     }
 }
